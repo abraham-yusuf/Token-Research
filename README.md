@@ -10,6 +10,7 @@ A comprehensive toolkit for discovering, analyzing, and managing concentrated li
 - 📐 **LP Range Calculator** - Optimal tick ranges for V3, V4, Pons with IL estimation and risk scoring
 - 🔔 **Monitoring & Alerts** - Telegram, Discord, Slack, webhook alerts for range exit, fee collection, volume spikes
 - ⚡ **Execution Helpers** - Forge/cast scripts for mint, collect, burn, rebalance
+- 📊 **TheGraph Integration** - Historical pool data, volume, fees, swaps, mints, burns, fee APR calculation, new pool alerts
 
 ## Quick Start
 
@@ -132,6 +133,35 @@ await manager.send_warning("Range Exit", "Position out of range", chain="base", 
 monitor = PositionMonitor(manager, "https://mainnet.base.org")
 monitor.add_position("0xpool...", "base", "uniswap_v3", 77820, 81840, "USDC", "WETH")
 await monitor.start_monitoring(rpc_client, interval_seconds=60)
+```
+
+## TheGraph Integration
+
+```python
+from lib import TheGraphClient, TheGraphAnalyzer, Chain
+
+async with TheGraphClient() as client:
+    analyzer = TheGraphAnalyzer(client)
+
+    # Analyze pool history (30 days)
+    analysis = await analyzer.analyze_pool_history(
+        Chain.BASE, 
+        "0x...pool_address...", 
+        days=30
+    )
+    print(f"Fee APR: {analysis['metrics']['fee_apr_pct']:.1f}%")
+    print(f"7d Volume: ${analysis['metrics']['volume_7d_usd']:,.0f}")
+
+    # Find profitable pools for a token
+    pools = await analyzer.find_profitable_pools(
+        Chain.BASE, 
+        "0x...token_address...", 
+        min_fee_apr=20, 
+        min_tvl=50000
+    )
+
+    # Get new pool alerts (last 24h)
+    new_pools = await analyzer.get_new_pool_alerts(Chain.BASE, hours=24)
 ```
 
 ## Research Checklist

@@ -30,6 +30,20 @@ from .monitor import (
     PositionMonitor,
 )
 
+from .thegraph import (
+    TheGraphClient,
+    TheGraphAnalyzer,
+    PoolDayData,
+    PoolSnapshot,
+    PoolInfo,
+    SwapEvent,
+    PositionEvent,
+    Chain,
+    SubgraphEndpoint,
+    UNISWAP_V3_FACTORIES,
+    UNISWAP_V2_FACTORIES,
+)
+
 __all__ = [
     # LP Calculator
     "LPCalculator",
@@ -55,6 +69,18 @@ __all__ = [
     "TelegramChannel",
     "WebhookChannel",
     "PositionMonitor",
+    # TheGraph
+    "TheGraphClient",
+    "TheGraphAnalyzer",
+    "PoolDayData",
+    "PoolSnapshot",
+    "PoolInfo",
+    "SwapEvent",
+    "PositionEvent",
+    "Chain",
+    "SubgraphEndpoint",
+    "UNISWAP_V3_FACTORIES",
+    "UNISWAP_V2_FACTORIES",
 ]
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
