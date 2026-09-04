@@ -1,0 +1,99 @@
+{
+  "chains": {
+    "ethereum": {
+      "rpc_url": "https://eth.llamarpc.com",
+      "explorer_api_key": "${ETHERSCAN_API_KEY}",
+      "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "uniswap_v3_factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+    },
+    "base": {
+      "rpc_url": "https://mainnet.base.org",
+      "explorer_api_key": "${BASESCAN_API_KEY}",
+      "weth": "0x4200000000000000000000000000000000000006",
+      "uniswap_v3_factory": "0x33128a8fC17869897dcE68Ed026d694621f6FDfD"
+    },
+    "arbitrum": {
+      "rpc_url": "https://arb1.arbitrum.io/rpc",
+      "explorer_api_key": "${ARBISCAN_API_KEY}",
+      "weth": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "uniswap_v3_factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+    },
+    "optimism": {
+      "rpc_url": "https://mainnet.optimism.io",
+      "explorer_api_key": "${OPTIMISM_API_KEY}",
+      "weth": "0x4200000000000000000000000000000000000006",
+      "uniswap_v3_factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+    },
+    "polygon": {
+      "rpc_url": "https://polygon-rpc.com",
+      "explorer_api_key": "${POLYGONSCAN_API_KEY}",
+      "weth": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "uniswap_v3_factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+    },
+    "bsc": {
+      "rpc_url": "https://bsc-dataseed.binance.org",
+      "explorer_api_key": "${BSCSCAN_API_KEY}",
+      "weth": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "pancake_v3_factory": "0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865"
+    },
+    "avalanche": {
+      "rpc_url": "https://api.avax.network/ext/bc/C/rpc",
+      "explorer_api_key": "${SNOWTRACE_API_KEY}",
+      "weth": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      "trader_joe_v3_factory": "0x..."
+    },
+    "robinhood": {
+      "rpc_url": "${ROBINHOOD_RPC_URL}",
+      "explorer_api_key": "${ROBINHOOD_API_KEY}",
+      "weth": "0x...",
+      "uniswap_v4_factory": "0x..."
+    }
+  },
+
+  "screening": {
+    "default_max_age_hours": 24,
+    "default_min_liquidity_usd": 50000,
+    "default_min_score": 70,
+    "fee_tiers": {
+      "uniswap_v3": [100, 500, 3000, 10000],
+      "pancake_v3": [100, 500, 2500, 10000]
+    }
+  },
+
+  "scoring_weights": {
+    "contract_safety": 25,
+    "liquidity": 25,
+    "tokenomics": 20,
+    "fundamentals": 15,
+    "technical": 15
+  },
+
+  "auto_reject_thresholds": {
+    "max_fee_pct": 10,
+    "min_liquidity_usd": 20000,
+    "min_locked_liquidity_pct": 50,
+    "max_top10_holder_pct": 50
+  },
+
+  "position_sizing": {
+    "A+": "3-5%",
+    "A": "2-3%",
+    "B": "1-2%",
+    "C": "0.5%",
+    "D": "0%"
+  },
+
+  "alerts": {
+    "telegram_bot_token": "${TELEGRAM_BOT_TOKEN}",
+    "telegram_chat_id": "${TELEGRAM_CHAT_ID}",
+    "webhook_url": "${WEBHOOK_URL}",
+    "enable_telegram": false,
+    "enable_webhook": false
+  },
+
+  "rpc": {
+    "timeout_seconds": 30,
+    "max_retries": 3,
+    "rate_limit_per_second": 10
+  }
+}

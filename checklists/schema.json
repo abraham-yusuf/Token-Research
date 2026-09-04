@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TokenResearchResult",
+  "type": "object",
+  "required": ["token", "address", "chain", "dex", "pair", "score", "tier", "checks", "recommendation", "timestamp"],
+  "properties": {
+    "token": { "type": "string", "description": "Token symbol" },
+    "address": { "type": "string", "pattern": "^0x[a-fA-F0-9]{40}$" },
+    "chain": { "type": "string", "enum": ["ethereum", "base", "arbitrum", "optimism", "polygon", "robinhood", "bsc", "avalanche"] },
+    "dex": { "type": "string", "enum": ["uniswap_v2", "uniswap_v3", "uniswap_v4", "pons", "sushiswap", "camelot", "ramses", "thena", "velocore"] },
+    "pair": { "type": "string", "description": "e.g., WETH/TOKEN" },
+    "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "tier": { "type": "string", "enum": ["A+", "A", "B", "C", "D"] },
+    "checks": {
+      "type": "object",
+      "required": ["contract_safety", "liquidity", "tokenomics", "fundamentals", "technical"],
+      "properties": {
+        "contract_safety": { "type": "integer", "minimum": 0, "maximum": 25 },
+        "liquidity": { "type": "integer", "minimum": 0, "maximum": 25 },
+        "tokenomics": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "fundamentals": { "type": "integer", "minimum": 0, "maximum": 15 },
+        "technical": { "type": "integer", "minimum": 0, "maximum": 15 }
+      }
+    },
+    "flags": { "type": "array", "items": { "type": "string" } },
+    "liquidity_usd": { "type": "number" },
+    "locked_liquidity_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+    "volume_24h": { "type": "number" },
+    "fee_tier": { "type": "number" },
+    "holder_count": { "type": "integer" },
+    "top10_pct": { "type": "number" },
+    "recommendation": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "pool_address": { "type": "string", "pattern": "^0x[a-fA-F0-9]{40}$" },
+    "tick_lower": { "type": "integer" },
+    "tick_upper": { "type": "integer" },
+    "current_tick": { "type": "integer" }
+  }
+}

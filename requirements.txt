@@ -1,0 +1,25 @@
+# Core
+aiohttp>=3.9.0
+aiofiles>=23.2.0
+python-dotenv>=1.0.0
+
+# Ethereum
+eth-abi>=4.2.0
+eth-utils>=4.2.0
+eth-typing>=3.5.0
+web3>=6.15.0
+
+# Data
+pydantic>=2.5.0
+pandas>=2.1.0
+
+# Async
+asyncio-throttle>=1.0.0
+
+# CLI
+click>=8.1.0
+rich>=13.7.0
+
+# Optional: for advanced simulation
+# tenderly-sdk>=0.1.0
+# foundry (forge) - install separately

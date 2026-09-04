@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.venv/
+venv/
+env/
+
+# Config with secrets
+config/local.json
+.env
+.env.local
+.env.*.local
+
+# Output
+output/*.json
+output/*.csv
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if any frontend)
+node_modules/
+dist/
+build/
+
+# Foundry (if used)
+foundry.toml
+lib/
+out/
+cache/
+broadcast/
+
+# Large files
+*.db
+*.sqlite
