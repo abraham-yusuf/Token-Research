@@ -38,7 +38,7 @@ build/
 
 # Foundry (if used)
 foundry.toml
-lib/
+foundry/lib/
 out/
 cache/
 broadcast/
