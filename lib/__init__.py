@@ -57,6 +57,19 @@ from .simulation import (
     SafetyChecker,
 )
 
+from .rebalancer import (
+    PositionRebalancer,
+    PortfolioRebalancer,
+    GasOptimizedExecutor,
+    FlashbotsExecutor,
+    Position,
+    RebalanceConfig,
+    RebalancePlan,
+    RebalanceResult,
+    RebalanceStrategy,
+    RebalanceAction,
+)
+
 __all__ = [
     # LP Calculator
     "LPCalculator",
@@ -105,6 +118,17 @@ __all__ = [
     "HoneypotDetector",
     "HoneypotIsAPI",
     "SafetyChecker",
+    # Rebalancer
+    "PositionRebalancer",
+    "PortfolioRebalancer",
+    "GasOptimizedExecutor",
+    "FlashbotsExecutor",
+    "Position",
+    "RebalanceConfig",
+    "RebalancePlan",
+    "RebalanceResult",
+    "RebalanceStrategy",
+    "RebalanceAction",
 ]
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"

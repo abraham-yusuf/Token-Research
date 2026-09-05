@@ -11,6 +11,7 @@ A comprehensive toolkit for discovering, analyzing, and managing concentrated li
 - 🔔 **Monitoring & Alerts** - Telegram, Discord, Slack, webhook alerts for range exit, fee collection, volume spikes
 - ⚡ **Execution Helpers** - Forge/cast scripts for mint, collect, burn, rebalance
 - 📊 **TheGraph Integration** - Historical pool data, volume, fees, swaps, mints, burns, fee APR calculation, new pool alerts
+- 🔄 **Automated Rebalancing** - Passive/active/gamma strategies, portfolio risk management, gas optimization, dry-run mode
 
 ## Quick Start
 
@@ -133,6 +134,65 @@ await manager.send_warning("Range Exit", "Position out of range", chain="base", 
 monitor = PositionMonitor(manager, "https://mainnet.base.org")
 monitor.add_position("0xpool...", "base", "uniswap_v3", 77820, 81840, "USDC", "WETH")
 await monitor.start_monitoring(rpc_client, interval_seconds=60)
+```
+
+## Automated Rebalancing
+
+```python
+from lib import PositionRebalancer, PortfolioRebalancer, RebalanceConfig, RebalanceStrategy, Position, Chain
+from lib import TheGraphClient
+from web3 import Web3
+from eth_account import Account
+import os
+
+# Setup
+w3 = Web3(Web3.HTTPProvider("https://mainnet.base.org"))
+account = Account.from_key(os.getenv("PRIVATE_KEY"))
+
+config = RebalanceConfig(
+    strategy=RebalanceStrategy.PASSIVE,  # or ACTIVE, GAMMA, GRID, MEAN_REVERSION
+    target_width_pct=0.20,              # ±20% range
+    max_slippage_pct=0.5,               # 0.5% max slippage
+    max_gas_gwei=30,                    # Max gas price
+    dry_run=True,                       # ALWAYS start with dry_run=True!
+)
+
+# Initialize with TheGraph for historical data
+async with TheGraphClient() as graph_client:
+    rebalancer = PositionRebalancer(
+        w3=w3,
+        account=account,
+        config=config,
+        graph_client=graph_client
+    )
+
+    # Add positions to manage
+    position = Position(
+        pool_address="0x...pool...",
+        chain="base",
+        dex="uniswap_v3",
+        token0="0x...USDC...",
+        token1="0x...WETH...",
+        token0_symbol="USDC",
+        token1_symbol="WETH",
+        token0_decimals=6,
+        token1_decimals=18,
+        tick_lower=77820,
+        tick_upper=81840,
+        liquidity=1000000000000000000,
+        fee_tier=3000,
+        nft_id=12345,  # Position NFT ID
+    )
+    rebalancer.add_position(position)
+
+    # Single rebalance cycle
+    results = await rebalancer.run_rebalance_cycle()
+    for r in results:
+        print(f"Action: {r.plan.action.value} - {r.plan.reason}")
+        print(f"New range: {r.plan.new_tick_lower} - {r.plan.new_tick_upper}")
+
+    # Or continuous monitoring
+    # await rebalancer.start_continuous(interval_seconds=300)  # 5 min
 ```
 
 ## Honeypot Detection & Contract Safety
