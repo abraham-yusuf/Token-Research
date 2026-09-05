@@ -12,16 +12,20 @@ A comprehensive toolkit for discovering, analyzing, and managing concentrated li
 - ⚡ **Execution Helpers** - Forge/cast scripts for mint, collect, burn, rebalance
 - 📊 **TheGraph Integration** - Historical pool data, volume, fees, swaps, mints, burns, fee APR calculation, new pool alerts
 - 🔄 **Automated Rebalancing** - Passive/active/gamma strategies, portfolio risk management, gas optimization, dry-run mode
+- 📊 **Interactive Dashboard** - Streamlit + FastAPI with real-time monitoring, pool analytics, position management
 
 ## Quick Start
 
 ```bash
-# Install dependencies
+# Install core dependencies
 pip install -r requirements.txt
+
+# Install dashboard dependencies (optional)
+pip install -r dashboard/requirements.txt
 
 # Copy config template
 cp config/config.json config/local.json
-# Edit local.json with your API keys
+# Edit local.json with your API keys (TheGraph, Telegram, etc.)
 
 # Run screener
 python scripts/screener.py --chain base --dex uniswap_v3 --min-liq 50000 --output output/base_v3.json
@@ -29,31 +33,48 @@ python scripts/screener.py --chain base --dex uniswap_v3 --min-liq 50000 --outpu
 # Use LP calculator
 python -c "
 from lib.lp_calculator import *
-pool = PoolParams(fee_tier=3000, tick_spacing=60, current_tick=80067, ...)
+pool = PoolParams(fee_tier=3000, tick_spacing=60, current_tick=80067, 
+                  current_sqrt_price_x96=price_to_sqrt_price_x96(3000,6,18),
+                  liquidity=10**18, token0_decimals=6, token1_decimals=18)
 calc = LPCalculator(DexType.UNISWAP_V3)
 result = calc.calculate_range_from_price(pool, 3000, 0.20, 1000, 0.33)
 print(format_result(result))
 "
+
+# Run dashboard (optional)
+./dashboard/run_dashboard.sh
+# Or with Docker
+docker-compose up --build
 ```
 
-## Project Structure
-
+```
 ```
 token-research/
-├── scripts/
-│   └── screener.py           # Main multi-chain screener
+├── dashboard/
+│   ├── backend.py            # FastAPI REST API
+│   ├── frontend.py           # Streamlit UI
+│   ├── run_dashboard.sh      # Launcher script
+│   └── requirements.txt
 ├── lib/
 │   ├── lp_calculator.py      # V3/V4/Pons range calculator
 │   ├── monitor.py            # Alert & position monitoring
+│   ├── thegraph.py           # TheGraph subgraph integration
+│   ├── simulation.py         # Honeypot detection (Tenderly/Forge)
+│   ├── rebalancer.py         # Automated rebalancing engine
 │   └── __init__.py
 ├── checklists/
 │   ├── research_framework.md # 100-point scoring guide
-│   └── schema.json           # JSON output schema
+│   └── schema.json           # Output JSON schema
 ├── config/
 │   ├── config.json           # Template config
 │   └── local.json            # Your local config (gitignored)
 ├── output/                   # Screener results
-└── requirements.txt
+├── scripts/
+│   └── screener.py           # Main multi-chain screener
+├── Dockerfile                # Docker build
+├── docker-compose.yml        # Multi-container setup
+├── requirements.txt
+└── README.md
 ```
 
 ## Screener Usage
@@ -193,6 +214,130 @@ async with TheGraphClient() as graph_client:
 
     # Or continuous monitoring
     # await rebalancer.start_continuous(interval_seconds=300)  # 5 min
+```
+
+## Automated Rebalancing
+
+```python
+from lib import PositionRebalancer, PortfolioRebalancer, RebalanceConfig, RebalanceStrategy, Position, Chain
+from lib import TheGraphClient
+from web3 import Web3
+from eth_account import Account
+import os
+
+# Setup
+w3 = Web3(Web3.HTTPProvider("https://mainnet.base.org"))
+account = Account.from_key(os.getenv("PRIVATE_KEY"))
+
+config = RebalanceConfig(
+    strategy=RebalanceStrategy.PASSIVE,  # or ACTIVE, GAMMA, GRID, MEAN_REVERSION
+    target_width_pct=0.20,              # ±20% range
+    max_slippage_pct=0.5,               # 0.5% max slippage
+    max_gas_gwei=30,                    # Max gas price
+    dry_run=True,                       # ALWAYS start with dry_run=True!
+)
+
+# Initialize with TheGraph for historical data
+async with TheGraphClient() as graph_client:
+    rebalancer = PositionRebalancer(
+        w3=w3,
+        account=account,
+        config=config,
+        graph_client=graph_client
+    )
+
+    # Add positions to manage
+    position = Position(
+        pool_address="0x...pool...",
+        chain="base",
+        dex="uniswap_v3",
+        token0="0x...USDC...",
+        token1="0x...WETH...",
+        token0_symbol="USDC",
+        token1_symbol="WETH",
+        token0_decimals=6,
+        token1_decimals=18,
+        tick_lower=77820,
+        tick_upper=81840,
+        liquidity=1000000000000000000,
+        fee_tier=3000,
+        nft_id=12345,  # Position NFT ID
+    )
+    rebalancer.add_position(position)
+
+    # Single rebalance cycle
+    results = await rebalancer.run_rebalance_cycle()
+    for r in results:
+        print(f"Action: {r.plan.action.value} - {r.plan.reason}")
+        print(f"New range: {r.plan.new_tick_lower} - {r.plan.new_tick_upper}")
+
+    # Or continuous monitoring
+    # await rebalancer.start_continuous(interval_seconds=300)  # 5 min
+```
+
+## Dashboard
+
+The framework includes a full-featured dashboard with **FastAPI backend** and **Streamlit frontend**.
+
+### Quick Start
+
+```bash
+# Install dashboard dependencies
+pip install -r dashboard/requirements.txt
+
+# Run both backend and frontend
+./dashboard/run_dashboard.sh
+```
+
+Or with Docker:
+
+```bash
+# Build and run
+docker-compose up --build
+
+# Or in background
+docker-compose up -d
+```
+
+### Dashboard Features
+
+| Page | Description |
+|------|-------------|
+| **Overview** | Portfolio summary, quick actions |
+| **🔍 Screener** | Multi-chain token screening with filters |
+| **🛡️ Safety Check** | Honeypot detection, tax analysis |
+| **📐 LP Calculator** | Range calculation, tick/price converter, visualizations |
+| **🔄 Rebalancer** | Position management, strategy config, dry-run |
+| **🔔 Alerts** | Real-time alerts, history, test alerts |
+
+### API Endpoints
+
+```bash
+# Health check
+curl http://localhost:8000/health
+
+# Pool analytics
+curl -X POST http://localhost:8000/api/v1/pool/analytics \
+  -H "Content-Type: application/json" \
+  -d '{"chain": "base", "pool_address": "0x...", "days": 30}'
+
+# Screener
+curl -X POST http://localhost:8000/api/v1/screener/run \
+  -H "Content-Type: application/json" \
+  -d '{"chains": ["base"], "dexes": ["uniswap_v3"], "min_liquidity": 50000}'
+
+# Honeypot check
+curl -X POST http://localhost:8000/api/v1/safety/honeypot \
+  -H "Content-Type: application/json" \
+  -d '{"token_address": "0x...", "chain": "base"}'
+
+# LP range
+curl -X POST http://localhost:8000/api/v1/lp/calculate-range \
+  -H "Content-Type: application/json" \
+  -d '{"chain": "base", "pool_address": "0x...", "center_price": 3000, "width_pct": 0.2, "amount0": 1000, "amount1": 0.33}'
+
+# API Documentation
+# Open http://localhost:8000/docs in browser
 ```
 
 ## Honeypot Detection & Contract Safety
