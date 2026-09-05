@@ -135,6 +135,37 @@ monitor.add_position("0xpool...", "base", "uniswap_v3", 77820, 81840, "USDC", "W
 await monitor.start_monitoring(rpc_client, interval_seconds=60)
 ```
 
+## Honeypot Detection & Contract Safety
+
+```python
+from lib import SafetyChecker, HoneypotIsAPI, SimulationBackend
+from lib.simulation import ForgeSimulator, HoneypotDetector
+
+# Quick check with honeypot.is (free, no API key, supports multiple chains)
+checker = SafetyChecker("https://eth.llamarpc.com")
+
+result = await checker.check_token_safety("0x...token...", "base")
+print(f"Honeypot: {result['is_honeypot']}")
+print(f"Buy tax: {result['buy_tax']}%")
+print(f"Sell tax: {result['sell_tax']}%")
+print(f"Can sell: {result['can_sell']}")
+print(f"Owner: {result['owner']}")
+print(f"Proxy: {result['proxy']}")
+print(f"Risks: {result['risks']}")
+
+# Deep check with Forge simulation (requires fork RPC)
+# Requires: foundry installed, RPC with fork capability (Alchemy/QuickNode)
+forge_result = checker.check_with_forge(
+    token_address="0x...token...",
+    pair_address="0x...pair...",
+    router_address="0x...router...",
+    weth_address="0x...weth..."
+)
+print(f"Honeypot: {forge_result.is_honeypot}")
+print(f"Buy success: {forge_result.buy_success}")
+print(f"Sell success: {forge_result.sell_success}")
+```
+
 ## TheGraph Integration
 
 ```python

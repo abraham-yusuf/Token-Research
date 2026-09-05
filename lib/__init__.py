@@ -44,6 +44,19 @@ from .thegraph import (
     UNISWAP_V2_FACTORIES,
 )
 
+from .simulation import (
+    SimulationBackend,
+    SimulationResult,
+    HoneypotCheckResult,
+    ContractSafetyResult,
+    ForgeSimulator,
+    TenderlySimulator,
+    AnvilSimulator,
+    HoneypotDetector,
+    HoneypotIsAPI,
+    SafetyChecker,
+)
+
 __all__ = [
     # LP Calculator
     "LPCalculator",
@@ -81,6 +94,17 @@ __all__ = [
     "SubgraphEndpoint",
     "UNISWAP_V3_FACTORIES",
     "UNISWAP_V2_FACTORIES",
+    # Simulation
+    "SimulationBackend",
+    "SimulationResult",
+    "HoneypotCheckResult",
+    "ContractSafetyResult",
+    "ForgeSimulator",
+    "TenderlySimulator",
+    "AnvilSimulator",
+    "HoneypotDetector",
+    "HoneypotIsAPI",
+    "SafetyChecker",
 ]
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
